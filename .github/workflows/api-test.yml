@@ -13,5 +13,4 @@ jobs:
         run: >
           newman run MSSV_HoTen_GoRest.postman_collection.json
           -e MSSV_HoTen_GoRest_Env.postman_environment.json
-          -d users.csv
           --env-var "token=${{ secrets.GOREST_TOKEN }}"
