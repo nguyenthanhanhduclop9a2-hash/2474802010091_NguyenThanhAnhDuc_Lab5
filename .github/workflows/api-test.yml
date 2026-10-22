@@ -11,6 +11,6 @@ jobs:
       - run: npm install -g newman
       - name: Run Newman
         run: >
-          newman run 2474802010091_NguyenThanhAnhDucGoRest.postman_collection.json
-          -e M2474802010091_NguyenThanhAnhDucEnv.postman_environment.json
+          newman run 2474802010091_NguyenThanhAnhDuc_GoRest.postman_collection.json
+          -e M2474802010091_NguyenThanhAnhDuc_Env.postman_environment.json
           --env-var "token=${{ secrets.GOREST_TOKEN }}"
