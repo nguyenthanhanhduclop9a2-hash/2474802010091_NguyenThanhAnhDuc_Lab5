@@ -1,0 +1,17 @@
+name: API Test
+on: push
+jobs:
+  api-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install -g newman
+      - name: Run Newman
+        run: >
+          newman run MSSV_HoTen_GoRest.postman_collection.json
+          -e MSSV_HoTen_GoRest_Env.postman_environment.json
+          -d users.csv
+          --env-var "token=${{ secrets.GOREST_TOKEN }}"
