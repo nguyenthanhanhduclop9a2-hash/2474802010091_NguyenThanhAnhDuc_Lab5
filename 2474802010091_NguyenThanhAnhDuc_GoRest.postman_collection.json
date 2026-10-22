@@ -1,0 +1,435 @@
+{
+  "info": {
+    "_postman_id": "36101603-899d-406b-bfd9-72c0dbea5527",
+    "name": "2474802010091_NguyenThanhAnhDuc_GoRest",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59055765",
+    "_collection_link": "https://go.postman.co/collection/59055765-36101603-899d-406b-bfd9-72c0dbea5527?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Positive_Cases",
+      "item": [
+        {
+          "name": "1 - Create User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let requestJson;",
+                  "let responseJson;",
+                  "let requestParseError;",
+                  "let responseParseError;",
+                  "",
+                  "try {",
+                  "    const resolvedRawBody = pm.variables.replaceIn(pm.request.body.raw);",
+                  "    requestJson = JSON.parse(resolvedRawBody);",
+                  "} catch (error) {",
+                  "    requestParseError = error;",
+                  "}",
+                  "",
+                  "try {",
+                  "    responseJson = pm.response.json();",
+                  "} catch (error) {",
+                  "    responseParseError = error;",
+                  "}",
+                  "",
+                  "const isResponseObject =",
+                  "    !responseParseError &&",
+                  "    responseJson !== null &&",
+                  "    typeof responseJson === \"object\" &&",
+                  "    !Array.isArray(responseJson);",
+                  "",
+                  "pm.test(\"Status 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Raw request body là JSON hợp lệ\", function () {",
+                  "    pm.expect(requestParseError, requestParseError && requestParseError.message).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Response body là JSON hợp lệ\", function () {",
+                  "    pm.expect(responseParseError, responseParseError && responseParseError.message).to.be.undefined;",
+                  "});",
+                  "",
+                  "pm.test(\"Response có id\", function () {",
+                  "    pm.expect(isResponseObject, \"Response phải là JSON object\").to.be.true;",
+                  "    pm.expect(responseJson).to.have.property(\"id\");",
+                  "});",
+                  "",
+                  "[\"name\", \"gender\", \"email\", \"status\"].forEach(function (field) {",
+                  "    pm.test(`Response ${field} khớp raw request body`, function () {",
+                  "        pm.expect(requestParseError, requestParseError && requestParseError.message).to.be.undefined;",
+                  "        pm.expect(isResponseObject, \"Response phải là JSON object\").to.be.true;",
+                  "        pm.expect(responseJson).to.have.property(field);",
+                  "        pm.expect(responseJson[field]).to.eql(requestJson[field]);",
+                  "    });",
+                  "});",
+                  "",
+                  "if (",
+                  "    pm.response.code === 201 &&",
+                  "    isResponseObject &&",
+                  "    responseJson.id !== undefined &&",
+                  "    responseJson.id !== null",
+                  ") {",
+                  "    pm.environment.set(\"userId\", responseJson.id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "inherit"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Nguyen Van B\",\"gender\":\"male\",\"email\":\"VanB@example.com\",\"status\":\"active\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Generated from cURL: curl --request POST '{{baseUrl}}/users' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data-raw '{\"name\":\"{{name}}\",\"gender\":\"{{gender}}\",\"email\":\"{{runEmail}}\",\"status\":\"{{status}}\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "2 - Get User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Đúng user\", () =>",
+                  "  pm.expect(pm.response.json().id).to.eql(Number(pm.environment.get(\"userId\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ]
+            },
+            "description": "Generated from cURL: curl --request GET '{{baseUrl}}/users/{{userId}}' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        },
+        {
+          "name": "3 - Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Status = inactive\", () =>",
+                  "  pm.expect(pm.response.json().status).to.eql(\"inactive\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"inactive\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ]
+            },
+            "description": "Generated from cURL: curl --request PATCH '{{baseUrl}}/users/{{userId}}' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data-raw '{\"status\":\"inactive\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "4 - Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204 No Content\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ]
+            },
+            "description": "Generated from cURL: curl --request DELETE '{{baseUrl}}/users/{{userId}}' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Negative_Cases",
+      "item": [
+        {
+          "name": "7 - Get Deleted User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User đã bị xóa → 404\", () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ]
+            },
+            "description": "Generated from cURL: curl --request GET '{{baseUrl}}/users/{{userId}}' --header 'Authorization: Bearer {{token}}'"
+          },
+          "response": []
+        },
+        {
+          "name": "5 - Create User Without Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Thiếu token → 401\", () => pm.response.to.have.status(401));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Generated from cURL: curl --request POST '{{baseUrl}}/users' --header 'Content-Type: application/json' --data-raw '{\"name\":\"{{name}}\",\"gender\":\"{{gender}}\",\"email\":\"{{runEmail}}\",\"status\":\"{{status}}\"}'"
+          },
+          "response": []
+        },
+        {
+          "name": "6 - Create User With Duplicate Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.sendRequest({\r",
+                  "  url: pm.environment.get(\"baseUrl\") + \"/users\",\r",
+                  "  method: \"POST\",\r",
+                  "  header: {\r",
+                  "    \"Authorization\": \"Bearer \" + pm.environment.get(\"token\"),\r",
+                  "    \"Content-Type\": \"application/json\"\r",
+                  "  },\r",
+                  "  body: { mode: \"raw\", raw: JSON.stringify({\r",
+                  "    name: pm.iterationData.get(\"name\"),\r",
+                  "    gender: pm.iterationData.get(\"gender\"),\r",
+                  "    email: pm.environment.get(\"runEmail\"),\r",
+                  "    status: \"active\"\r",
+                  "  })}\r",
+                  "}, () => {});\r",
+                  "pm.test(\"Email trùng → 422\", () => pm.response.to.have.status(422));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Generated from cURL: curl --request POST '{{baseUrl}}/users' --header 'Authorization: Bearer {{token}}' --header 'Content-Type: application/json' --data-raw '{\"name\":\"{{name}}\",\"gender\":\"{{gender}}\",\"email\":\"{{runEmail}}\",\"status\":\"{{status}}\"}'"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
