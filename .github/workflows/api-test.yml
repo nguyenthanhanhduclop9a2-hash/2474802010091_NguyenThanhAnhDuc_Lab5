@@ -12,5 +12,5 @@ jobs:
       - name: Run Newman
         run: >
           newman run 2474802010091_NguyenThanhAnhDuc_GoRest.postman_collection.json
-          -e M2474802010091_NguyenThanhAnhDuc_GoRest_Env.postman_environment.json
+          -e 2474802010091_NguyenThanhAnhDuc_GoRest_Env.postman_environment.json
           --env-var "token=${{ secrets.GOREST_TOKEN }}"
